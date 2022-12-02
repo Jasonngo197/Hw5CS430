@@ -91,7 +91,6 @@ public class Main {
         ArrayList<Float> clippedList3 = new ArrayList<>();
         ArrayList<Float> finalClippedList = new ArrayList<>();
         ArrayList<Float> verticePoints = new ArrayList<>();
-        ArrayList<ArrayList<Double>> listOfDrawing = new ArrayList<>();
         ArrayList<ArrayList<Float>> intListOfDrawing = new ArrayList<>();
         ArrayList<ArrayList<Float>> afterClippingList = new ArrayList<>();
         ArrayList<ArrayList<Integer>> viewPortList = new ArrayList<>();
@@ -370,36 +369,46 @@ public class Main {
 
 //        System.out.println("after viewport " + afterClippingList);
 
+        ArrayList<ArrayList<Integer>> ListOfDrawing = new ArrayList<>(intListOfDrawing.size());
+        ArrayList<Integer> tempList = new ArrayList<>();
+
+        for (int i = 0; i < intListOfDrawing.size(); i++) { // change floats to int
+            for (int j = 0; j < intListOfDrawing.get(i).size(); j++) {
+
+                tempList.add(Math.round(intListOfDrawing.get(i).get(j)));
+            }
+            ListOfDrawing.add(tempList);
+        }
 
 
-        for (int i = 0; i < intListOfDrawing.size(); i++) { //for each polygon
+        for (int i = 0; i < ListOfDrawing.size(); i++) { //for each polygon
 
-            float min;
-            float max;
+            int min;
+            int max;
 
-            if(intListOfDrawing.get(i).size() != 0){
-                min = findMin(intListOfDrawing.get(i));
-                max = findMax(intListOfDrawing.get(i));
+            if(ListOfDrawing.get(i).size() != 0){
+                min = findMin(ListOfDrawing.get(i));
+                max = findMax(ListOfDrawing.get(i));
             }
             else {
                 min = 0;
                 max = 0;
             }
 
-            for (int j = (int) min; j <= max; j++) { //from min to max create an empty list for each line
+            for (int j =min; j <= max; j++) { //from min to max create an empty list for each line
                 scanFillList2.add(new ArrayList<Float>());
                 scanFillList.add(new ArrayList<Float>());
             }
 
-            for (int j = 0; j < intListOfDrawing.get(i).size() - 3; j+=3) {//adding edges to edge list
-                Float y0edge = intListOfDrawing.get(i).get(j+1);
-                Float y1edge = intListOfDrawing.get(i).get(j+4);
+            for (int j = 0; j < ListOfDrawing.get(i).size() - 3; j+=3) {//adding edges to edge list
+                int y0edge = ListOfDrawing.get(i).get(j+1);
+                int y1edge = ListOfDrawing.get(i).get(j+4);
 
                 for (int k = (int) min; k <= max; k++) {
                     if(!Objects.equals(y0edge, y1edge)){
                         if((k >= y0edge && k < y1edge) || (k >= y1edge && k < y0edge)){
-                            Float x0 = intListOfDrawing.get(i).get(j);
-                            Float x1 = intListOfDrawing.get(i).get(j+3);
+                            int x0 = ListOfDrawing.get(i).get(j);
+                            int x1 = ListOfDrawing.get(i).get(j+3);
 
                             int edgeRowArrayNum = (int) (k-min);
 
@@ -423,10 +432,10 @@ public class Main {
 
                 for (int k = 0; k < (scanFillList2.get((edgeRowArrayNum)).size()); k+=4) {
 
-                    Float x0 = scanFillList2.get(edgeRowArrayNum).get(k);
-                    Float y0 = scanFillList2.get(edgeRowArrayNum).get(k+1);
-                    Float x1 = scanFillList2.get(edgeRowArrayNum).get(k+2);
-                    Float y1 = scanFillList2.get(edgeRowArrayNum).get(k+3);
+                    int x0 = scanFillList2.get(edgeRowArrayNum).get(k);
+                    int y0 = scanFillList2.get(edgeRowArrayNum).get(k+1);
+                    int x1 = scanFillList2.get(edgeRowArrayNum).get(k+2);
+                    int y1 = scanFillList2.get(edgeRowArrayNum).get(k+3);
 
                     if(y0 != y1){
                         intersect(j, x0, y0, x1, y1, min); //calculate intersect
@@ -519,9 +528,9 @@ public class Main {
         faceList.add(inputLine);
     }
 
-    public static float findMin(ArrayList<Float> list){ //changed to i+=3 bc theres z
+    public static int findMin(ArrayList<Integer> list){ //changed to i+=3 bc theres z
 
-        Float min;
+        int min;
 
         min = list.get(0);
 
@@ -534,9 +543,9 @@ public class Main {
         return min;
     }
 
-    public static float findMax(ArrayList<Float> list){ //changed to i+=3 bc theres z
+    public static int findMax(ArrayList<Integer> list){ //changed to i+=3 bc theres z
 
-        Float max = 0.0f;
+        int max = 0;
 
         for (int i = 0; i < list.size(); i+=3) {
             if(list.get(i+1) > max){
@@ -547,7 +556,7 @@ public class Main {
         return max;
     }
 
-    public static void intersect(int j, Float x0, Float y0, Float x1, Float y1, Float min){
+    public static void intersect(int j, int x0, int y0, int x1, int y1, int min){
         float dx = x1-x0;
         float dy = y1-y0;
 
